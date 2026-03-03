@@ -1,0 +1,25 @@
+# Environments
+.env
+.env.local
+.env.*
+
+# Secrets and Keys
+secrets.json
+keys/
+
+# Packages
+node_modules/
+
+# Build artifacts
+dist/
+build/
+.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
