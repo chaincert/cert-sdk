@@ -1,60 +1,50 @@
-# @certid/sdk
+# CertID SDK: Sovereign Edge Identity
 
-The official SDK for integrating the **CertID Sovereign Identity Layer** into your dApps and smart contracts.
+The CertID SDK provides a hardware-anchored, keyless identity layer for L2 ecosystems. By utilizing W3C WebAuthn standards (P-256) and Arbitrum Stylus (Rust-WASM), CertID enables secure, sub-second biometric verification on-chain without the friction of browser-based wallet extensions.
 
-CertID allows you to leverage hardware-anchored identity verification using Apple FaceID, TouchID, and Android Biometrics directly from your smart contracts. It securely verifies passkeys generated in the device's Secure Enclave against an Arbitrum Stylus Rust engine.
+## Getting Started
 
-## Installation
+### 1. Installation
 
 ```bash
 npm install @certid/sdk
 ```
 
-## Smart Contract Integration (`ICertID.sol`)
+### 2. Initialization
 
-Your smart contract can easily interface with the CertID Manager on Arbitrum Sepolia.
+Initialize the provider by pointing it to your CertIDManager contract address.
 
-Use the `ICertID.sol` interface to easily hook into the deployed contract:
+```javascript
+import { CertIDProvider } from '@certid/sdk';
 
-```solidity
-import "@certid/sdk/contracts/ICertID.sol";
+const certID = new CertIDProvider({
+  rpcUrl: "https://sepolia-rollup.arbitrum.io/rpc",
+  contractAddress: "0x67921Ae6eFA1c1Ca024725F425056FFaf7705c1E"
+});
+```
 
-contract MyDePINDApp {
-    // Arbitrum Sepolia CertIDManager Address
-    ICertID public certId = ICertID(0x67921Ae6eFA1c1Ca024725F425056FFaf7705c1E);
+### 3. Registering a Device
 
-    function doHighSecurityAction(bytes32 msgHash, bytes calldata signature) public {
-        // 1. Ask CertID to verify the FaceID signature
-        bool isHuman = certId.verifyBiometricLogin(msgHash, signature);
-        require(isHuman, "Biometric proof failed!");
+Trigger the hardware-anchored registration flow (requires user biometric interaction).
 
-        // 2. Execute their dApp's logic...
-    }
+```javascript
+const identity = await certID.registerDevice();
+console.log("Device registered on-chain:", identity.txHash);
+```
+
+### 4. Biometric Verification
+
+Authenticate the user via the `verify` method. This returns a boolean validity check after executing the on-chain Stylus verification.
+
+```javascript
+const isValid = await certID.verify();
+if (isValid) {
+  console.log("Welcome to the Sovereign Edge.");
 }
 ```
 
-## Frontend Integration (`CertIDClient`)
+## Engineering Principles
 
-Use the included helper functions to orchestrate WebAuthn generation, formatting, and submission via Ethers.js.
-
-```typescript
-import { CertIDClient } from '@certid/sdk';
-
-// Initialize the client via browser wallet
-const client = new CertIDClient();
-
-// 1. Register a new Hardware Key (0.0005 ETH Fee)
-const isRegistered = await client.registerHardwareIdentity(publicKeyHex);
-
-// 2. Verify a Biometric Login Signature
-const isValid = await client.verifyBiometricLogin(
-    authDataHex, 
-    clientDataJSONHex, 
-    rHex, 
-    sHex
-);
-```
-
-## Supported Networks
-
-- **Arbitrum Sepolia:** `0x67921Ae6eFA1c1Ca024725F425056FFaf7705c1E`
+- **Gas-Optimized**: Verified to execute within ~1.1M gas limits for Stylus verification.
+- **Non-Custodial**: No seed phrases or private keys stored in the browser; your biometrics act as the signing authority.
+- **Chain-Agnostic**: Logic is portable across EVM-compatible and WASM-based environments (Arbitrum, Stellar, Starknet).
