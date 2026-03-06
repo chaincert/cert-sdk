@@ -1,20 +1,21 @@
 {
-  "name": "@certid/sdk",
-  "version": "1.1.0",
-  "description": "Official SDK for the CertID Sovereign Identity Layer - hardware biometric verification on Arbitrum",
+  "name": "@cert-id/sdk",
+  "version": "0.1.8",
+  "description": "Official SDK for the CertID Sovereign Identity Layer - hardware biometric verification on Arbitrum Stylus",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     }
   },
   "files": [
     "dist",
-    "contracts"
+    "contracts",
+    "bin"
   ],
   "bin": {
     "cert-verify": "bin/cert-verify.js"
@@ -29,20 +30,17 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
-    "cert",
-    "certblockchain",
-    "blockchain",
-    "identity",
     "certid",
-    "soulbound",
-    "sbt",
+    "identity",
+    "webauthn",
+    "passkeys",
+    "arbitrum",
+    "stylus",
+    "hardware-enclave",
     "attestation",
-    "verification",
-    "eas",
-    "chain-certify",
-    "c3rt"
+    "verification"
   ],
-  "author": "Cert Blockchain Team <dev@c3rt.org>",
+  "author": "CertID Engineering <dev@c3rt.org>",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -51,10 +49,6 @@
   "homepage": "https://c3rt.org",
   "bugs": {
     "url": "https://github.com/chaincertify/cert-sdk/issues"
-  },
-  "dependencies": {
-    "ethers": "^6.0.0",
-    "solc": "^0.8.20"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
@@ -65,6 +59,7 @@
     "eslint": "^8.55.0",
     "jest": "^29.7.0",
     "react": "^18.2.0",
+    "solc": "^0.8.20",
     "ts-jest": "^29.1.1",
     "tsup": "^8.0.1",
     "typescript": "^5.3.2"
@@ -81,5 +76,12 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "type": "commonjs"
+  "type": "commonjs",
+  "overrides": {
+    "minimatch@^3.0.0": "^3.1.4",
+    "minimatch@^5.0.0": "^5.1.8",
+    "minimatch@^9.0.0": "^9.0.7",
+    "rollup": "^4.59.0",
+    "serialize-javascript": "^6.0.3"
+  }
 }
