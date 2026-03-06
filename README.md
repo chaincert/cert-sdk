@@ -7,7 +7,7 @@ The CertID SDK provides a hardware-anchored, keyless identity layer for L2 ecosy
 ### 1. Installation
 
 ```bash
-npm install @certid/sdk
+npm install @cert-id/sdk
 ```
 
 ### 2. Initialization
@@ -15,7 +15,7 @@ npm install @certid/sdk
 Initialize the provider by pointing it to your CertIDManager contract address.
 
 ```javascript
-import { CertIDProvider } from '@certid/sdk';
+import { CertIDProvider } from '@cert-id/sdk';
 
 const certID = new CertIDProvider({
   rpcUrl: "https://sepolia-rollup.arbitrum.io/rpc",
