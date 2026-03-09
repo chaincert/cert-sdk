@@ -1,4 +1,4 @@
-> **MANDATORY UPDATE**: Users must update to version `0.1.10` or higher. The underlying `CertIDManager` contract has been redeployed to a secure address (0xB05d...3CaA). Previous versions will no longer function correctly.
+> **MANDATORY UPDATE**: Users must update to version `0.1.11` or higher. The underlying `CertIDManager` contract has been redeployed to a secure address (0xB05d...3CaA). Previous versions will no longer function correctly.
 
 # CertID SDK: Sovereign Edge Identity
 
@@ -8,15 +8,11 @@ The CertID SDK provides a hardware-anchored, keyless identity layer for L2 ecosy
 
 ### 1. Installation
 
-Standard installation:
 ```bash
 npm install @cert-id/sdk
 ```
 
-If you encounter `ERESOLVE` or peer dependency conflicts (e.g., with `ethers` v5), use:
-```bash
-npm install @cert-id/sdk ethers@latest
-```
+> **Note**: The SDK bundles its own `ethers` v6 internally. If your project uses `ethers` v5 (e.g., with Hardhat or Chainlink), there will be no conflicts.
 
 
 ### 2. Initialization
