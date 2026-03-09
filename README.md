@@ -1,3 +1,5 @@
+> **MANDATORY UPDATE**: Users must update to version `0.1.10` or higher. The underlying `CertIDManager` contract has been redeployed to a secure address (0xB05d...3CaA). Previous versions will no longer function correctly.
+
 # CertID SDK: Sovereign Edge Identity
 
 The CertID SDK provides a hardware-anchored, keyless identity layer for L2 ecosystems. By utilizing W3C WebAuthn standards (P-256) and Arbitrum Stylus (Rust-WASM), CertID enables secure, sub-second biometric verification on-chain without the friction of browser-based wallet extensions.
@@ -6,9 +8,16 @@ The CertID SDK provides a hardware-anchored, keyless identity layer for L2 ecosy
 
 ### 1. Installation
 
+Standard installation:
 ```bash
 npm install @cert-id/sdk
 ```
+
+If you encounter `ERESOLVE` or peer dependency conflicts (e.g., with `ethers` v5), use:
+```bash
+npm install @cert-id/sdk ethers@latest
+```
+
 
 ### 2. Initialization
 
