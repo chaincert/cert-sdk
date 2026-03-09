@@ -1,6 +1,6 @@
 {
   "name": "@cert-id/sdk",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Official SDK for the CertID Sovereign Identity Layer - hardware biometric verification on Arbitrum Stylus",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -50,6 +50,9 @@
   "bugs": {
     "url": "https://github.com/chaincertify/cert-sdk/issues"
   },
+  "dependencies": {
+    "ethers": "^6.0.0"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.11",
     "@types/node": "^20.10.0",
@@ -65,7 +68,6 @@
     "typescript": "^5.3.2"
   },
   "peerDependencies": {
-    "ethers": "^6.0.0",
     "react": "^18.0.0"
   },
   "peerDependenciesMeta": {
