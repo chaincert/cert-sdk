@@ -19,7 +19,7 @@ import { CertIDProvider } from '@cert-id/sdk';
 
 const certID = new CertIDProvider({
   rpcUrl: "https://sepolia-rollup.arbitrum.io/rpc",
-  contractAddress: "0x67921Ae6eFA1c1Ca024725F425056FFaf7705c1E"
+  contractAddress: "0xB05dBBAe660C4F2ebD917638760e608b3c263CaA"
 });
 ```
 
