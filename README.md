@@ -1,4 +1,4 @@
-> **MANDATORY UPDATE**: Users must update to version `0.1.14` or higher. The underlying `CertIDManager` contract has been redeployed to a secure address (0xB05d...3CaA). Previous versions will no longer function correctly.
+> **MANDATORY UPDATE**: Users must update to version `0.1.18` or higher. This latest version is the only supported and good version. The underlying `CertIDManager` contract has been redeployed to a secure address (old versions will fail) and it has the corrected c3rt.org website domain. Previous versions will no longer function correctly.
 
 # CertID SDK: Sovereign Edge Identity
 
