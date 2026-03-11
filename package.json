@@ -44,11 +44,11 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chaincertify/cert-sdk.git"
+    "url": "git+https://github.com/cert-id/cert-sdk.git"
   },
-  "homepage": "https://c3rt.org",
+  "homepage": "https://cert-id.org",
   "bugs": {
-    "url": "https://github.com/chaincertify/cert-sdk/issues"
+    "url": "https://github.com/cert-id/cert-sdk/issues"
   },
   "dependencies": {
     "ethers": "^6.0.0"

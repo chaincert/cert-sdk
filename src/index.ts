@@ -1,4 +1,13 @@
 import { ethers } from 'ethers';
+import { IdentityModule } from './identity';
+import { EcosystemResolver } from './resolver';
+import { CONTRACT_ADDRESSES, CERT_ID_ABI } from './constants';
+import type { CertSDKConfig, SDKResult } from './types';
+
+export * from './types';
+export * from './constants';
+export { IdentityModule } from './identity';
+export { EcosystemResolver } from './resolver';
 
 export interface CertIDConfig {
   network: string;
@@ -33,7 +42,7 @@ export class CertIDProvider {
   /**
    * Triggers device-native biometric prompt (TouchID/FaceID/Windows Hello)
    */
-  async registerBiometricDevice(params: RegisterParams) {
+  async registerDevice(params: RegisterParams) {
     console.log(`[CertID] Requesting hardware attestation for: ${params.userIdentifier}...`);
 
     // Graceful fallback if tested in Node.js (backend) instead of a Browser
@@ -83,7 +92,7 @@ export class CertIDProvider {
   /**
    * Routes P-256 signature verification. 
    */
-  async verifyBiometricLogin(params: VerifyParams) {
+  async generateTeeAttestation(params: VerifyParams) {
     console.log(`[CertID] Requesting verification via hardware enclave...`);
 
     if (typeof window === 'undefined' || !window.navigator?.credentials) {
@@ -106,5 +115,68 @@ export class CertIDProvider {
       console.error("[CertID] Verification failed.", error);
       return false;
     }
+  }
+}
+
+export class CertSDK {
+  public provider: ethers.JsonRpcProvider;
+  public signer: ethers.Wallet | null = null;
+  public identity: IdentityModule;
+  public resolver: EcosystemResolver;
+
+  public addresses: {
+    certID: string;
+  };
+
+  public contracts: {
+    certID: ethers.Contract;
+  };
+
+  private config: CertSDKConfig;
+
+  constructor(config?: CertSDKConfig) {
+    this.config = {
+      rpcUrl: config?.rpcUrl || process.env.CERT_RPC_URL || 'https://rpc.cert-id.org',
+      apiUrl: config?.apiUrl || process.env.CERT_API_URL || 'https://api.cert-id.org/api/v1',
+      certIDAddress: config?.certIDAddress || CONTRACT_ADDRESSES.CERT_ID,
+      privateKey: config?.privateKey || process.env.CERT_PRIVATE_KEY,
+    };
+
+    if (!this.config.rpcUrl) {
+      throw new Error("RPC URL required");
+    }
+
+    this.provider = new ethers.JsonRpcProvider(this.config.rpcUrl);
+
+    this.addresses = {
+      certID: this.config.certIDAddress!,
+    };
+
+    this.contracts = {
+      certID: new ethers.Contract(this.addresses.certID, CERT_ID_ABI, this.provider),
+    };
+
+    this.identity = new IdentityModule(this);
+    this.resolver = new EcosystemResolver(this);
+  }
+
+  async autoConnect(privateKey?: string): Promise<boolean> {
+    const key = privateKey || this.config.privateKey;
+    if (!key) {
+      throw new Error('CertSDK: No private key found. Set CERT_PRIVATE_KEY in .env or pass to autoConnect()');
+    }
+
+    this.signer = new ethers.Wallet(key, this.provider);
+    this.contracts.certID = this.contracts.certID.connect(this.signer) as ethers.Contract;
+
+    return true;
+  }
+
+  async getAddress(): Promise<string | null> {
+    return this.signer ? await this.signer.getAddress() : null;
+  }
+
+  isConnected(): boolean {
+    return this.signer !== null;
   }
 }
