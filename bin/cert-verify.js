@@ -116,7 +116,7 @@ ${colors.bold}Examples:${colors.reset}
   cert-verify 0x7a250d...
   cert-verify --identity 0x123...
 
-${colors.dim}Documentation: https://cert-id.org/docs${colors.reset}
+${colors.dim}Documentation: https://c3rt.org/docs${colors.reset}
 `);
 }
 

@@ -136,8 +136,8 @@ export class CertSDK {
 
   constructor(config?: CertSDKConfig) {
     this.config = {
-      rpcUrl: config?.rpcUrl || process.env.CERT_RPC_URL || 'https://rpc.cert-id.org',
-      apiUrl: config?.apiUrl || process.env.CERT_API_URL || 'https://api.cert-id.org/api/v1',
+      rpcUrl: config?.rpcUrl || process.env.CERT_RPC_URL || 'https://rpc.c3rt.org',
+      apiUrl: config?.apiUrl || process.env.CERT_API_URL || 'https://api.c3rt.org/api/v1',
       certIDAddress: config?.certIDAddress || CONTRACT_ADDRESSES.CERT_ID,
       privateKey: config?.privateKey || process.env.CERT_PRIVATE_KEY,
     };

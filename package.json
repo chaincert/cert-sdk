@@ -46,7 +46,7 @@
     "type": "git",
     "url": "git+https://github.com/cert-id/cert-sdk.git"
   },
-  "homepage": "https://cert-id.org",
+  "homepage": "https://c3rt.org",
   "bugs": {
     "url": "https://github.com/cert-id/cert-sdk/issues"
   },
