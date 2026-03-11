@@ -1,6 +1,6 @@
 {
   "name": "@cert-id/sdk",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "Official SDK for the CertID Sovereign Identity Layer - hardware biometric verification on Arbitrum Stylus",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
