@@ -53,3 +53,7 @@ if (isValid) {
 - **Gas-Optimized**: Verified to execute within ~1.1M gas limits for Stylus verification.
 - **Non-Custodial**: No seed phrases or private keys stored in the browser; your biometrics act as the signing authority.
 - **Chain-Agnostic**: Logic is portable across EVM-compatible and WASM-based environments (Arbitrum, Stellar, Starknet).
+  
+## License
+
+This project is licensed under the [Apache License 2.0](LICENSE).
