@@ -4,36 +4,50 @@ pragma solidity ^0.8.20;
 /**
  * @title ICertID
  * @dev The official interface for the CertID Sovereign Identity Layer.
- * Use this interface to connect your dApp's smart contracts to the CertID 
- * hardware-to-chain verification engine on Arbitrum.
+ * Acts as the L1/L2 entrypoint for registering and verifying hardware
+ * attestations routed to the Arbitrum Stylus Rust engine.
  */
 interface ICertID {
     
     /**
-     * @dev Registers a new user's hardware public key (Secure Enclave / Passkey).
-     * This transaction requires a registration fee payable to the CertID protocol.
-     * @param publicKey The 64-byte uncompressed P-256 public key (X and Y coordinates).
+     * @dev Registers a new device on Arbitrum L2.
+     * @param device_id The 32-byte cryptographic identifier for the device.
+     * @param owner The address of the device's human owner.
      */
-    function registerHardwareIdentity(bytes calldata publicKey) external payable;
+    function registerDevice(bytes32 device_id, address owner) external;
 
     /**
-     * @dev Verifies a NIST P-256 hardware biometric signature against the user's registered key.
-     * This calls the CertID Arbitrum Stylus Rust engine under the hood.
-     * @param msgHash The sha256(authData || sha256(clientDataJSON)) representing the WebAuthn challenge.
-     * @param signature The raw r||s signature (64 bytes) from the device's Secure Enclave.
-     * @return bool True if the signature is mathematically valid and belongs to the caller.
+     * @dev Updates the Trust Score of a registered device.
+     * @param device_id The 32-byte cryptographic identifier for the device.
+     * @param new_score The updated trust score (0-100).
      */
-    function verifyBiometricLogin(bytes32 msgHash, bytes calldata signature) external view returns (bool);
+    function updateTrustScore(bytes32 device_id, uint256 new_score) external;
 
     /**
-     * @dev Returns the 64-byte public key registered to a specific Ethereum address.
-     * @param user The address of the user.
-     * @return The public key bytes.
+     * @dev Verifies a TEE Attestation via the Stylus Rust engine.
+     * @param device_id The 32-byte cryptographic identifier for the device.
+     * @param attestation_data The raw attestation payload from the device.
+     * @return bool True if the attestation is mathematically valid.
      */
-    function userPublicKeys(address user) external view returns (bytes memory);
+    function verifyTeeAttestation(bytes32 device_id, bytes calldata attestation_data) external returns (bool);
+
+    /**
+     * @dev Returns the trust score for a specific device ID.
+     * @param device_id The 32-byte cryptographic identifier for the device.
+     * @return The trust score.
+     */
+    function getDeviceTrust(bytes32 device_id) external view returns (uint256);
     
     /**
-     * @dev Returns the current registration fee required to onboard a new hardware identity.
+     * @dev Returns the owner address for a specific device ID.
+     * @param device_id The 32-byte cryptographic identifier for the device.
+     * @return The owner address.
      */
-    function registrationFee() external view returns (uint256);
+    function getDeviceOwner(bytes32 device_id) external view returns (address);
+
+    /**
+     * @dev Returns the total number of successful verifications across the protocol.
+     * @return The total verifications count.
+     */
+    function getTotalVerifications() external view returns (uint256);
 }

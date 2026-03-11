@@ -5,11 +5,10 @@
 
 import { ethers } from 'ethers';
 import type { CertSDK } from './index';
-import type { ResolvedTransaction, FullIdentity, AppData } from './types';
+import type { ResolvedTransaction, AppData } from './types';
 
 /**
- * Resolves blockchain transactions to ecosystem-aware data objects
- * Transforms raw hex data into human-readable identity information
+ * Resolves blockchain transactions into basic CertID context
  */
 export class EcosystemResolver {
   private sdk: CertSDK;
@@ -19,9 +18,9 @@ export class EcosystemResolver {
   }
 
   /**
-   * Resolve a transaction hash into a comprehensive ecosystem data object
+   * Resolve a transaction hash into a basic transaction object
    * @param txHash - Transaction hash to resolve
-   * @returns Resolved transaction with identity and application data
+   * @returns Resolved transaction data
    */
   async resolve(txHash: string): Promise<ResolvedTransaction | null> {
     try {
@@ -34,12 +33,6 @@ export class EcosystemResolver {
       if (!tx) {
         return null;
       }
-
-      // Resolve identities for participants
-      const [fromIdentity, toIdentity] = await Promise.all([
-        this.sdk.identity.getFullIdentity(tx.from),
-        tx.to ? this.sdk.identity.getFullIdentity(tx.to) : Promise.resolve(null),
-      ]);
 
       // Detect application-specific context
       const appData = await this.detectApplication(tx);
@@ -65,11 +58,11 @@ export class EcosystemResolver {
         value: ethers.formatEther(tx.value),
         gasFee,
         participants: {
-          from: fromIdentity || this.createAnonymousIdentity(tx.from),
-          to: tx.to ? (toIdentity || this.createAnonymousIdentity(tx.to)) : this.createContractCreation(),
+          from: tx.from,
+          to: tx.to || null,
         },
         application: appData,
-        network: 'Cert Mainnet',
+        network: 'Arbitrum Stylus',
       };
     } catch (error) {
       console.error('EcosystemResolver: Failed to resolve transaction', error);
@@ -87,27 +80,10 @@ export class EcosystemResolver {
 
     const toAddress = tx.to.toLowerCase();
 
-    // Check if Chain Certify transaction
-    if (toAddress === this.sdk.addresses.chainCertify.toLowerCase()) {
-      return {
-        app: 'Chain Certify',
-        action: 'File Attestation',
-        decoded: this.decodeChainCertifyCall(tx.data),
-      };
-    }
-
-    // Check if Cert Token transaction
-    if (toAddress === this.sdk.addresses.certToken.toLowerCase()) {
-      return {
-        app: 'Cert Token',
-        action: 'Token Transfer',
-      };
-    }
-
     // Check if CertID transaction
     if (toAddress === this.sdk.addresses.certID.toLowerCase()) {
       return {
-        app: 'Unknown',
+        app: 'CertID',
         action: 'CertID Operation',
         decoded: this.decodeCertIDCall(tx.data),
       };
@@ -117,36 +93,14 @@ export class EcosystemResolver {
   }
 
   /**
-   * Decode Chain Certify contract call data
-   */
-  private decodeChainCertifyCall(data: string): Record<string, unknown> {
-    try {
-      const iface = new ethers.Interface([
-        'function attestFile(bytes32 fileHash, string fileType)',
-      ]);
-      const decoded = iface.parseTransaction({ data });
-      if (decoded) {
-        return {
-          method: decoded.name,
-          fileHash: decoded.args[0],
-          fileType: decoded.args[1],
-        };
-      }
-    } catch {
-      // Unable to decode
-    }
-    return { raw: data };
-  }
-
-  /**
    * Decode CertID contract call data
    */
   private decodeCertIDCall(data: string): Record<string, unknown> {
     try {
       const iface = new ethers.Interface([
-        'function registerProfile(string handle, string metadataURI, uint8 entityType)',
-        'function awardBadge(address user, string badgeName)',
-        'function updateTrustScore(address user, uint256 score)',
+        'function registerDevice(bytes32 device_id, address owner)',
+        'function updateTrustScore(bytes32 device_id, uint256 new_score)',
+        'function verifyTeeAttestation(bytes32 device_id, bytes attestation_data)',
       ]);
       const decoded = iface.parseTransaction({ data });
       if (decoded) {
@@ -159,44 +113,6 @@ export class EcosystemResolver {
       // Unable to decode
     }
     return { raw: data };
-  }
-
-  /**
-   * Create anonymous identity placeholder
-   */
-  private createAnonymousIdentity(address: string): FullIdentity {
-    return {
-      address,
-      handle: 'Anonymous',
-      metadata: '',
-      isVerified: false,
-      isInstitutional: false,
-      trustScore: 0,
-      entityType: 0,
-      badges: [],
-      isKYC: false,
-      isAcademic: false,
-      isCreator: false,
-    };
-  }
-
-  /**
-   * Create contract creation placeholder
-   */
-  private createContractCreation(): FullIdentity {
-    return {
-      address: '0x0',
-      handle: 'Contract Creation',
-      metadata: '',
-      isVerified: false,
-      isInstitutional: false,
-      trustScore: 0,
-      entityType: 0,
-      badges: [],
-      isKYC: false,
-      isAcademic: false,
-      isCreator: false,
-    };
   }
 }
 

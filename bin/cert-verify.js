@@ -6,8 +6,6 @@
  * 
  * Usage:
  *   cert-verify <tx-hash>           Verify a transaction
- *   cert-verify --file <path>       Verify a local file
- *   cert-verify --hash <sha256>     Verify a file hash
  *   cert-verify --identity <addr>   Look up a CertID profile
  */
 
@@ -36,18 +34,6 @@ async function main() {
   }
 
   const sdk = new CertSDK();
-
-  // Handle --file flag
-  if (args[0] === '--file' && args[1]) {
-    await verifyFile(sdk, args[1]);
-    return;
-  }
-
-  // Handle --hash flag
-  if (args[0] === '--hash' && args[1]) {
-    await verifyHash(sdk, args[1]);
-    return;
-  }
 
   // Handle --identity flag
   if (args[0] === '--identity' && args[1]) {
@@ -93,51 +79,6 @@ async function verifyTransaction(sdk, txHash) {
   }
 }
 
-async function verifyFile(sdk, filePath) {
-  const fullPath = path.resolve(filePath);
-  
-  if (!fs.existsSync(fullPath)) {
-    console.log(`${colors.red}❌ File not found: ${fullPath}${colors.reset}`);
-    process.exit(1);
-  }
-
-  console.log(`${colors.cyan}📄 Hashing file...${colors.reset}`);
-  
-  const fileBuffer = fs.readFileSync(fullPath);
-  const hash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
-  
-  console.log(`SHA-256: 0x${hash}\n`);
-  await verifyHash(sdk, '0x' + hash);
-}
-
-async function verifyHash(sdk, fileHash) {
-  console.log(`${colors.cyan}🔍 Checking attestation...${colors.reset}\n`);
-
-  try {
-    const attestation = await sdk.contracts.chainCertify.getAttestation(fileHash);
-    
-    if (!attestation || attestation.signer === '0x0000000000000000000000000000000000000000') {
-      console.log(`${colors.red}❌ File hash not found on Cert Blockchain${colors.reset}`);
-      process.exit(1);
-    }
-
-    console.log(`${colors.green}✓ AUTHENTICATED${colors.reset}\n`);
-    console.log(`Signer: ${attestation.handle || attestation.signer}`);
-    console.log(`File Type: ${attestation.fileType}`);
-    console.log(`Timestamp: ${new Date(Number(attestation.timestamp) * 1000).toISOString()}`);
-
-    // Look up signer identity
-    const identity = await sdk.identity.getFullIdentity(attestation.signer);
-    if (identity?.isVerified) {
-      console.log(`\n${colors.green}✓ Signer is verified${colors.reset}`);
-      console.log(`Trust Score: ${identity.trustScore}/100`);
-    }
-  } catch (error) {
-    console.log(`${colors.red}❌ Verification failed: ${error.message}${colors.reset}`);
-    process.exit(1);
-  }
-}
-
 async function lookupIdentity(sdk, address) {
   console.log(`${colors.cyan}🆔 Looking up CertID...${colors.reset}\n`);
 
@@ -165,20 +106,17 @@ async function lookupIdentity(sdk, address) {
 function printHelp() {
   console.log(`
 ${colors.cyan}${colors.bold}Cert-Verify CLI${colors.reset}
-Verify documents and identities on Cert Blockchain
+Verify documents and identities
 
 ${colors.bold}Usage:${colors.reset}
   cert-verify <tx-hash>            Resolve a transaction
-  cert-verify --file <path>        Verify a local file
-  cert-verify --hash <sha256>      Verify a file hash
   cert-verify --identity <address> Look up a CertID profile
 
 ${colors.bold}Examples:${colors.reset}
   cert-verify 0x7a250d...
-  cert-verify --file ./contract.pdf
   cert-verify --identity 0x123...
 
-${colors.dim}Documentation: https://c3rt.org/docs${colors.reset}
+${colors.dim}Documentation: https://cert-id.org/docs${colors.reset}
 `);
 }
 
