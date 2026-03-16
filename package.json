@@ -15,7 +15,10 @@
   "files": [
     "dist",
     "contracts",
-    "bin"
+    "bin",
+    "SECURITY.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md"
   ],
   "bin": {
     "cert-verify": "bin/cert-verify.js"
