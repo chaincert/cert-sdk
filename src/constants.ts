@@ -12,11 +12,7 @@ export const CONTRACT_ADDRESSES = {
 
 // CertID Contract ABI (essential features for Hardware Biometric Verification)
 export const CERT_ID_ABI = [
-  'function registerDevice(bytes32 device_id, address owner) external',
-  'function updateTrustScore(bytes32 device_id, uint256 new_score) external',
-  'function verifyTeeAttestation(bytes32 device_id, bytes attestation_data) external returns (bool)',
-  'function getDeviceTrust(bytes32 device_id) external view returns (uint256)',
-  'function getDeviceOwner(bytes32 device_id) external view returns (address)',
-  'function getTotalVerifications() external view returns (uint256)',
+  'function registerHardwareIdentity(bytes publicKey) external payable',
+  'function verifyBiometricLogin(bytes32 msgHash, bytes signature) external view returns (bool)',
 ];
 

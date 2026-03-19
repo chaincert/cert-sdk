@@ -48,6 +48,25 @@ if (isValid) {
 }
 ```
 
+## Protocol Architecture Overview
+
+CertID operates across three integrated layers to provide a complete decentralized identity solution:
+
+1. **Wallet Layer (MetaMask / EVM Identity)**: Controls the identity on-chain and initiates transactions (paying gas, linking devices).
+2. **Hardware/SDK Layer (WebAuthn)**: Uses device features (Secure Enclave, TouchID, FaceID) to generate secure P-256 signatures tying physical human presence to the EVM identity.
+3. **Smart Contract Layer**: 
+   - **Solidity Manager (`CertID.sol`)**: Handles device registration, manages the identity mapping, and enforces monetization (Toll road).
+   - **Arbitrum Stylus Verifier (Rust WASM)**: Rapidly and cheaply verifies the P-256 signatures on-chain.
+
+## Dual Authentication Flow
+
+The SDK enforces a robust Dual Authentication model by combining standard Web3 mechanics with advanced hardware biometrics:
+
+- **Factor 1 - Web3 Possession (MetaMask)**: The user must possess the private key of their Ethereum wallet to sign the initial blockchain transaction.
+- **Factor 2 - Hardware Inherence (CertID)**: The user must physically interact with their device (via WebAuthn/FIDO2) to generate a native P-256 signature, which is verified on-chain.
+
+By requiring *both* the EVM signature and the Secure Enclave signature to authorize high-value actions, apps can achieve unparalleled security against remote attacks, phishing, and private key theft.
+
 ## Engineering Principles
 
 - **Gas-Optimized**: Verified to execute within ~1.1M gas limits for Stylus verification.

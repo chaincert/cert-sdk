@@ -98,9 +98,8 @@ export class EcosystemResolver {
   private decodeCertIDCall(data: string): Record<string, unknown> {
     try {
       const iface = new ethers.Interface([
-        'function registerDevice(bytes32 device_id, address owner)',
-        'function updateTrustScore(bytes32 device_id, uint256 new_score)',
-        'function verifyTeeAttestation(bytes32 device_id, bytes attestation_data)',
+        'function registerHardwareIdentity(bytes publicKey)',
+        'function verifyBiometricLogin(bytes32 msgHash, bytes signature)',
       ]);
       const decoded = iface.parseTransaction({ data });
       if (decoded) {
